@@ -1,0 +1,127 @@
+<!doctypehtml><html lang=en><meta charset=UTF-8><meta content="IE=edge"http-equiv=X-UA-Compatible><meta content="width=device-width,initial-scale=1"name=viewport><link href=https://fonts.googleapis.com rel=preconnect><link href=https://fonts.gstatic.com/ rel=preconnect crossorigin><link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap"rel=stylesheet><title>Twitch chat</title><script src=https://cdn.jsdelivr.net/npm/comfy.js@latest/dist/comfy.min.js></script><style>body,html{margin:0;font-family:monospace;color:#1f6784;background-image: url("c.png")}#chat{width:600px;height:100dvh;overflow-y:auto;display:flex;flex-direction:column-reverse}#chat::-webkit-scrollbar{display:none}#chat ul{list-style-type:none;list-style-position:outside}#chat li{display:flex;position:relative;background-color:#fff;max-width:460px;min-height:100px;max-height:fit-content;box-sizing:border-box;padding:0 0 0 48px;margin-bottom:42px;border:8px solid #ffe0ea;border-radius:70px}#chat li p{font-family:Dongle;text-wrap:pretty;word-wrap:break-word;font-size:40px;margin:0;max-width:22ch;line-height:36px;padding:25px 0 4px 4px;color:#f17cb0}#chat li .blueFlower{position:absolute;z-index:999;top:-16px;left:22px;width:38px;height:38px}#chat li .first-ear{position:absolute;top:-33px;left:60px;width:25px}#chat li .second-ear{position:absolute;top:-33px;left:210px;width:25px}#chat li .two-ears{position:absolute;top:-20px;left:365px;width:50px}#chat li .big-pata{position:absolute;width:35px;bottom:6px;right:24px}#chat li .small-pata{position:absolute;width:25px;bottom:45px;right:38px}#chat li .bigRoseFlower{position:absolute;right:-12px;width:38px;top:-6px}#chat li .mediumRoseFlower{position:absolute;right:-12px;width:20px;top:30px}#chat li .smallRoseFlower{position:absolute;right:-8px;width:15px;top:54px}#chat li h1{display:flex;z-index:999;align-items:center;text-transform:uppercase;line-height:0;justify-content:center;font-family:Dongle;text-align:center;width:200px;height:16px;padding:14px 0 8px 0;font-size:36px;position:absolute;background-color:#fff;border-radius:999px;border:3px solid #c3dfd9;color:#c3dfd9;top:-22px;left:42px;margin:0}#chat li .detalhe{position:absolute;width:8px;top:-12px;left:246px}#chat li:last-of-type{animation-name:slide-in-left;animation-duration:.3s;animation-timing-function:ease-in}#chat li:first-of-type{animation-name:disappear;animation-duration:.15s;animation-timing-function:ease-out}#chat blockquote{font-size:1.2rem}@keyframes slide-in-left{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}@keyframes disappear{from{opacity:1}to{opacity:0}}</style><div id=chat><ul></ul></div><script>let chat = document.querySelector("#chat>ul");
+    class EmoteReplacer {
+      constructor() {
+        this.emoteCache = new Map();
+        this.channelEmotes = {
+          bttv: new Map(),
+        };
+        this.globalEmotes = {
+          bttv: new Map(),
+        };
+        this.currentChannel = "";
+      }
+
+      async initializeChannel(channelName) {
+        this.currentChannel = channelName;
+      }
+
+      replaceEmotes(message, twitchEmotes = {}) {
+        let result = message;
+        const replacements = [];
+
+        if (twitchEmotes) {
+          Object.entries(twitchEmotes).forEach(([emoteId, positions]) => {
+            positions.forEach((position) => {
+              const [start, end] = position.split("-");
+              const emoteName = message.substring(
+                parseInt(start),
+                parseInt(end) + 1,
+              );
+              replacements.push({
+                start: parseInt(start),
+                end: parseInt(end) + 1,
+                original: emoteName,
+                replacement: `<img src="https://static-cdn.jtvnw.net/emoticons/v2/${emoteId}/default/dark/2.0" alt="${emoteName}" title="${emoteName}" style="height: 50px; vertical-align: middle; margin: 0px 4px;">`,
+              });
+            });
+          });
+        }
+
+        replacements.sort((a, b) => b.start - a.start);
+
+        replacements.forEach((replacement) => {
+          result =
+            result.slice(0, replacement.start) +
+            replacement.replacement +
+            result.slice(replacement.end);
+        });
+
+        return result;
+      }
+    }
+
+    const emoteReplacer = new EmoteReplacer();
+    emoteReplacer.initializeChannel("karindelay").then(() => {
+      console.log("Starting ComfyJS");
+      ComfyJS.Init("karindelay");
+    });
+    ComfyJS.onChat = (user, message, flags, self, extra) => {
+      let newMessage = document.createElement("li");
+      const processedMessage = emoteReplacer.replaceEmotes(
+        message,
+        extra.messageEmotes,
+      );
+      let newUser = document.createElement("h1");
+      let detalheUser = document.createElement("div");
+      let newContent = document.createElement("p");
+      let blueFlower = document.createElement("div");
+      let orelhinhaEsquerda = document.createElement("div");
+      let orelhinhaDireita = document.createElement("div");
+      let orelhinhasRosas = document.createElement("div");
+      let pataGrande = document.createElement("div");
+      let pataPequena = document.createElement("div");
+      let bigRoseFlower = document.createElement("div");
+      let mediumRoseFlower = document.createElement("div");
+      let smallRoseFlower = document.createElement("div");
+      detalheUser.className = "detalhe";
+      blueFlower.className = "blueFlower";
+      orelhinhaEsquerda.className = "first-ear";
+      orelhinhaDireita.className = "second-ear";
+      orelhinhasRosas.className = "two-ears";
+      pataGrande.className = "big-pata";
+      pataPequena.className = "small-pata";
+      bigRoseFlower.className = "bigRoseFlower";
+      mediumRoseFlower.className = "mediumRoseFlower";
+      smallRoseFlower.className = "smallRoseFlower";
+      detalheUser.innerHTML = `<svg data-name="Layer 1"id=Layer_1 viewBox="0 0 29 31"xmlns=http://www.w3.org/2000/svg><defs><style>.cls-4{fill:none;stroke:#fff;stroke-miterlimit:10;stroke-width:15px}</style></defs><g id=CHAT><polygon class=cls-4 points="18.72 7.5 19.22 9 19.55 10.12 19.81 11.13 19.94 11.6 20.07 12.18 20.21 12.72 20.39 13.51 20.5 14.13 20.62 14.69 20.71 15.23 20.8 15.73 20.87 16.21 20.96 16.75 21.01 17.21 21.09 17.75 21.14 18.25 21.19 18.76 21.25 19.23 21.29 19.77 21.32 20.09 21.34 20.43 21.37 20.81 21.39 21.17 21.41 21.61 21.42 21.9 21.43 22.11 21.44 22.24 21.44 22.39 21.44 22.49 21.44 22.52 7.5 22.52 7.5 7.5 18.72 7.5"/></g></svg>`;
+      blueFlower.innerHTML = `<svg data-name="Layer 2"id=Layer_2 viewBox="0 0 79.07 77.68"xmlns=http://www.w3.org/2000/svg><defs><style>.cls-1{fill:#abc6c2}.cls-2{fill:#fff;stroke:#bfe0dc;stroke-linecap:round;stroke-linejoin:round;stroke-width:4px}</style></defs><g id=CHAT><g><path class=cls-2 d=M66.29,61.8c9.61-4.79,13.52-16.47,8.73-26.08-2.19-4.4-5.83-7.59-10.04-9.32,1.16-4.4.79-9.23-1.4-13.63C58.79,3.16,47.11-.74,37.5,4.05c-4.83,2.41-8.22,6.56-9.79,11.32-4.74-1.61-10.1-1.4-14.93,1.01C3.16,21.17-.74,32.84,4.05,42.46c2.33,4.67,6.28,7.99,10.84,9.62-.92,4.18-.47,8.7,1.59,12.83,4.79,9.61,16.47,13.52,26.08,8.73,4.59-2.29,7.87-6.14,9.53-10.59,4.56,1.35,9.61,1.05,14.2-1.24Z /><circle class=cls-1 cx=39.57 cy=39.07 r=9.5 /></g></g></svg>`;
+      orelhinhaEsquerda.innerHTML = `<svg data-name="Layer 3"id=Layer_3 viewBox="0 0 54.5 29.55"xmlns=http://www.w3.org/2000/svg><defs><style>.cls-3{fill:#fff;stroke:#c3dfd9;stroke-miterlimit:10;stroke-width:6px}</style></defs><g id=CHAT><path class=cls-3 d=M48,26.34S27.82,2.8,21.92,3,4.78,26.53,4.78,26.53l43.22-.19Z /></g></svg>`;
+      orelhinhaDireita.innerHTML = `<svg data-name="Layer 4"id=Layer_4 viewBox="0 0 56.43 29.55"xmlns=http://www.w3.org/2000/svg><defs><style>.cls-3{fill:#fff;stroke:#c3dfd9;stroke-miterlimit:10;stroke-width:6px}</style></defs><g id=CHAT><path class=cls-3 d=M6.66,26.34S27.63,2.8,33.76,3s17.8,23.53,17.8,23.53l-44.9-.19Z /></g></svg>`;
+      orelhinhasRosas.innerHTML = `<svg data-name="Layer 5"id=Layer_5 viewBox="0 0 101.36 39.84"xmlns=http://www.w3.org/2000/svg><defs><style>.cls-5{fill:#ffe0ea}</style></defs><g id=CHAT><path class=cls-5 d=M9.89,22.62S26.07-1.67,33.61.09s17.59,24.32,17.59,24.32h12.89s13.89-20.57,22.77-18.99c8.88,1.58,14.5,27.69,14.5,27.69L0,39.84l9.89-17.22Z /></g></svg>`;
+      pataGrande.innerHTML = `<svg data-name="Layer 6"id=Layer_6 viewBox="0 0 66.19 66.74"xmlns=http://www.w3.org/2000/svg><defs><style>.cls-6{fill:#ff76b8}.cls-7{opacity:.22}</style></defs><g id=CHAT><g class=cls-7><ellipse class=cls-6 cx=34.51 cy=9.93 rx=7.31 ry=9.93 /><ellipse class=cls-6 cx=14.48 cy=20.76 rx=7.31 ry=9.93 transform="translate(-10.31 15.65) rotate(-43.45)"/><ellipse class=cls-6 cx=9.37 cy=40.19 rx=7.31 ry=9.93 transform="translate(-30.27 28.73) rotate(-60.75)"/><ellipse class=cls-6 cx=54.93 cy=15.85 rx=9.93 ry=7.31 transform="translate(34.67 69.32) rotate(-85.34)"/><path class=cls-6 d=M53.38,32.22c-4.83-2.4-9.74-3.42-13.73-3.12-.08,0-.16-.03-.24-.04-1.44-.12-2.85.28-4.18,1.1-1.58.72-2.81,1.78-3.51,3.2-.08.15-.12.32-.19.48-2.25,3.26-3.87,7.92-4.3,13.19-.85,10.4,3.23,19.22,9.11,19.69,3.23.26,6.32-2.04,8.59-5.9s6.63-6.35,11.18-6.32c4.45.03,7.99-1.43,9.43-4.31,2.63-5.28-2.81-13.33-12.15-17.98Z /></g></g></svg>`;
+      pataPequena.innerHTML = `<svg data-name="Layer 6"id=Layer_6 viewBox="0 0 66.19 66.74"xmlns=http://www.w3.org/2000/svg><defs><style>.cls-6{fill:#ff76b8}.cls-7{opacity:.22}</style></defs><g id=CHAT><g class=cls-7><ellipse class=cls-6 cx=34.51 cy=9.93 rx=7.31 ry=9.93 /><ellipse class=cls-6 cx=14.48 cy=20.76 rx=7.31 ry=9.93 transform="translate(-10.31 15.65) rotate(-43.45)"/><ellipse class=cls-6 cx=9.37 cy=40.19 rx=7.31 ry=9.93 transform="translate(-30.27 28.73) rotate(-60.75)"/><ellipse class=cls-6 cx=54.93 cy=15.85 rx=9.93 ry=7.31 transform="translate(34.67 69.32) rotate(-85.34)"/><path class=cls-6 d=M53.38,32.22c-4.83-2.4-9.74-3.42-13.73-3.12-.08,0-.16-.03-.24-.04-1.44-.12-2.85.28-4.18,1.1-1.58.72-2.81,1.78-3.51,3.2-.08.15-.12.32-.19.48-2.25,3.26-3.87,7.92-4.3,13.19-.85,10.4,3.23,19.22,9.11,19.69,3.23.26,6.32-2.04,8.59-5.9s6.63-6.35,11.18-6.32c4.45.03,7.99-1.43,9.43-4.31,2.63-5.28-2.81-13.33-12.15-17.98Z /></g></g></svg>`;
+      bigRoseFlower.innerHTML = `<svg data-name="Layer 6"id=Layer_6 viewBox="0 0 79.07 77.68"xmlns=http://www.w3.org/2000/svg><defs><style>.cls-13{fill:#ff76b8;stroke:#ff76b8;stroke-miterlimit:10}.cls-8{fill:#fff;stroke:#ffa1d2;stroke-linecap:round;stroke-linejoin:round;stroke-width:4px}</style></defs><g id=CHAT><g><path class=cls-8 d=M66.29,61.8c9.61-4.79,13.52-16.47,8.73-26.08-2.19-4.4-5.83-7.59-10.04-9.32,1.16-4.4.79-9.23-1.4-13.63C58.79,3.16,47.11-.74,37.5,4.05c-4.83,2.41-8.22,6.56-9.79,11.32-4.74-1.61-10.1-1.4-14.93,1.01C3.16,21.17-.74,32.84,4.05,42.46c2.33,4.67,6.28,7.99,10.84,9.62-.92,4.18-.47,8.7,1.59,12.83,4.79,9.61,16.47,13.52,26.08,8.73,4.59-2.29,7.87-6.14,9.53-10.59,4.56,1.35,9.61,1.05,14.2-1.24Z /><circle class=cls-13 cx=39.57 cy=39.07 r=9.5 /></g></g></svg>`;
+      mediumRoseFlower.innerHTML = `<svg data-name="Layer 7"id=Layer_7 viewBox="0 0 43.83 44.97"xmlns=http://www.w3.org/2000/svg><defs><style>.cls-9{fill:#ff76b8;stroke:#ff76b8;stroke-miterlimit:10}.cls-10{fill:#fff;stroke:#ffa1d2;stroke-linecap:round;stroke-linejoin:round;stroke-width:4px}</style></defs><g id=CHAT><g><path class=cls-10 d=M40.47,12.65c-.54-6.4-6.16-11.14-12.55-10.61-2.92.25-5.5,1.56-7.39,3.52-2.19-1.62-4.95-2.48-7.87-2.23C6.25,3.86,1.5,9.48,2.04,15.88c.27,3.22,1.83,6.02,4.12,7.94-1.94,2.28-3.01,5.3-2.74,8.51.54,6.4,6.16,11.14,12.55,10.61,3.11-.26,5.82-1.72,7.74-3.89,2.12,1.43,4.72,2.18,7.47,1.95,6.4-.54,11.14-6.16,10.61-12.55-.26-3.05-1.67-5.73-3.78-7.63,1.76-2.23,2.71-5.1,2.45-8.16Z /><circle class=cls-9 cx=21.94 cy=22.47 r=5.68 /></g></g></svg>`;
+      smallRoseFlower.innerHTML = `<svg data-name="Layer 8"id=Layer_8 viewBox="0 0 35.06 34.99"xmlns=http://www.w3.org/2000/svg><defs><style>.cls-11{fill:#ff76b8;stroke:#ff76b8;stroke-miterlimit:10}.cls-12{fill:#fff;stroke:#ffa1d2;stroke-linecap:round;stroke-linejoin:round;stroke-width:4px}</style></defs><g id=CHAT><g><path class=cls-12 d=M18.27,32.51c4.34,1.54,9.1-.74,10.64-5.07.7-1.98.61-4.06-.12-5.87,1.7-.95,3.08-2.5,3.78-4.49,1.54-4.34-.74-9.1-5.07-10.64-2.18-.77-4.47-.58-6.4.35-.92-1.94-2.57-3.53-4.76-4.3-4.34-1.54-9.1.74-10.64,5.07-.75,2.11-.59,4.32.26,6.21-1.56.96-2.82,2.44-3.48,4.31-1.54,4.34.74,9.1,5.07,10.64,2.07.73,4.24.6,6.11-.21.94,1.81,2.54,3.28,4.61,4.01Z /><circle class=cls-11 cx=17.32 cy=17.5 r=4.07 /></g></g></svg>`;
+      let displayName = user.length > 10 ? user.substring(0, 10) : user;
+      newUser.innerText = displayName;
+      newContent.innerHTML = processedMessage;
+      newMessage.append(
+        newUser,
+        detalheUser,
+        blueFlower,
+        orelhinhaEsquerda,
+        orelhinhaDireita,
+        orelhinhasRosas,
+        pataGrande,
+        pataPequena,
+        bigRoseFlower,
+        mediumRoseFlower,
+        smallRoseFlower,
+        newContent,
+      );
+      newMessage.setAttribute('data-message-id', extra.id);
+      chat.append(newMessage);
+
+      while (chat.children.length > 7) {
+          chat.removeChild(chat.firstChild);
+        }
+    };
+
+    ComfyJS.onMessageDeleted = (id, extra) => {
+  const messageElement = document.querySelector(`[data-message-id="${id}"]`);
+  if (messageElement) {
+    messageElement.remove();
+  }
+};
+    </script>
